@@ -9,9 +9,10 @@ app.use(express.json());
 // Routes
 const ZingMp3Router = require("./src/routes/ZingRouter");
 const AuthRouter = require("./src/routes/AuthRouter");
+const MainRouter = require("./src/routes/MainRouter");
 app.use("/api", ZingMp3Router);
 app.use("/api/auth", AuthRouter)
-
+app.use("/api/main", MainRouter)
 // Home & Error
 app.get("/", (req, res) => res.send("SERVER ON"));
 app.get("*", (req, res) => res.send("Sai đường dẫn!"));

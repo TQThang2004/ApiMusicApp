@@ -23,11 +23,6 @@ const login = async (req, res) => {
     const result = await authService.loginUser(req.body);
     res.status(200).json({ 
         message: "Đăng nhập thành công", 
-        // user: {
-        //     id: result.id,
-        //     username: result.username,
-        //     email: result.email,
-        // },
         token: result.token,
     });
   } catch (error) {
@@ -36,4 +31,16 @@ const login = async (req, res) => {
   }
 }
 
-module.exports = { register, login };
+const loginGoogle = async (req, res) => {
+  try {
+    const result = await authService.loginWithGoogle(req.body);
+    res.status(200).json({ 
+        message: "Đăng nhập thành công",
+        token: result.token,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+module.exports = { register, login, loginGoogle };
