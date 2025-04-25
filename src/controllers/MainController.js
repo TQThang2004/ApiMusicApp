@@ -19,7 +19,6 @@ const createPlaylist = async (req, res) => {
 }
 
 const getPlaylist = async (req, res) => {
-    console.log(req.params)
     try {
         const { userId } = req.params;
         const result = await mainService.getPlaylist(userId);
@@ -35,25 +34,56 @@ const getPlaylist = async (req, res) => {
     }
 }
 
+const getSongsFromPlaylist = async (req, res) => {
+    try {
+        const { playlistId } = req.params;
+        const result = await mainService.getSongsFromPlaylist(playlistId);
+        res.status(200).json({
+            message: "Lấy bài hát thành công",
+            songs: {
+                result
+            }
+        });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+        console.log(error.message)
+    }
+}
+
 const addSongToPlaylist = async (req, res) => {
     try {
         const result = await mainService.addSongToPlaylist(req.body);
         res.status(200).json({
             message: "Thêm bài hát vào playlist thành công",
-            song: {
-                id: result.id,
-                name: result.name,
-                userId: result.userId,
-                thumbnail: result.thumbnail
+            data: {
+                result
             }
         });
     } catch (error) {
-        
+        res.status(400).json({ message: error.message });
+        console.log(error.message)
+    }
+}
+
+const removeSongFromPlaylist = async (req, res) => {
+    try {
+        const result = await mainService.removeSongFromPlaylist(req.body);
+        res.status(200).json({
+            message: "Xoá playlist thành công",
+            data: {
+                result
+            }
+        });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+        console.log(error.message)
     }
 }
 
 module.exports = {
     createPlaylist,
     addSongToPlaylist,
-    getPlaylist
+    getPlaylist,
+    getSongsFromPlaylist,
+    removeSongFromPlaylist
 }

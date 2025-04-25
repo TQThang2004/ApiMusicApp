@@ -6,5 +6,7 @@ const MainController = require("../controllers/MainController")
 router.post("/create-playlist", MainController.createPlaylist)
 router.get("/get-playlist/:userId", MainController.getPlaylist)
 router.post("/add-song-to-playlist", MainController.addSongToPlaylist)
+router.get("/get-songs-from-playlist/:playlistId", MainController.getSongsFromPlaylist)
+router.delete("/remove-song-from-playlist", MainController.removeSongFromPlaylist)
 
 module.exports = router
