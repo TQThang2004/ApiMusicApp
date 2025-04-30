@@ -72,7 +72,7 @@ const loginUser = async (userData) => {
 
 const loginWithGoogle = async (userData) => {
   const { id, email, name, photo } = userData;
-  console.log(id, email, name, photo);
+  // console.log(id, email, name, photo);
   const usersRef = db.ref("users");
 
   const snapshot = await usersRef.orderByChild("id").equalTo(id).once("value");

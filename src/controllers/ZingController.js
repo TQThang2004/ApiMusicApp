@@ -13,7 +13,7 @@ class ZingController {
     }
 
     getDetailPlaylist(req, res) {
-        ZingMp3.getDetailPlaylist(req.query.encodeId).then((data) => {
+        ZingMp3.getDetailPlaylist(req.query.playlistId).then((data) => {
             res.json(data)
         })
     }
