@@ -1,6 +1,7 @@
 const mainService = require('../services/mainService');
 
-const createPlaylist = async (req, res) => {
+const   createPlaylist = async (req, res) => {
+    console.log(req.body)
     try {
         const result = await mainService.createPlaylist(req.body);
         res.status(200).json({
@@ -8,10 +9,9 @@ const createPlaylist = async (req, res) => {
             playlist: {
                 id: result.id,
                 name: result.name,
-                userId: result.userId,
-                thumbnail: result.thumbnail
+                thumbnailM: result.thumbnailM
             }
-        });
+        }); 
     } catch (error) {
         res.status(400).json({ message: error.message });
         console.log(error.message)
@@ -55,8 +55,10 @@ const addSongToPlaylist = async (req, res) => {
         const result = await mainService.addSongToPlaylist(req.body);
         res.status(200).json({
             message: "Thêm bài hát vào playlist thành công",
-            data: {
-                result
+            song: {
+                id: result.id,
+                name: result.name,
+                thumbnailM: result.thumbnailM
             }
         });
     } catch (error) {

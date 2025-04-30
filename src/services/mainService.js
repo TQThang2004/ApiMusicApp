@@ -2,84 +2,68 @@ const db = require("../config/db")
 const { ZingMp3 } = require("zingmp3-api-full")
 
 const createPlaylist = async (playlistData) => {
-    const { name, userId } = playlistData
+    const { name, userId } = playlistData;
+    const playlistsRef = db.ref(`users/${userId}/playlists`);
 
-    const playlistsRef = db.ref("playlists")
 
-    const snapshot = await playlistsRef
-        .orderByChild("userId")
-        .equalTo(userId)
-        .once("value");
-
+    const snapshot = await playlistsRef.once("value");
     if (snapshot.exists()) {
-        const playlists = Object.values(snapshot.val());
-        const duplicate = playlists.find(p => p.name.toLowerCase() === name.toLowerCase());
-
+        const playlists = snapshot.val();
+        const duplicate = Object.values(playlists).find(p => p.name.toLowerCase() === name.toLowerCase());
+        
         if (duplicate) {
-            throw new Error("Playlist name already exists")
+            throw new Error("Playlist name already exists");
         }
     }
 
-    // Tạo một playlist mới
-    const newPlaylistRef = playlistsRef.push()
+    // Tạo playlist mới
+    const newPlaylistRef = playlistsRef.push();
     await newPlaylistRef.set({
         id: newPlaylistRef.key,
         name,
-        userId,
         thumbnail: "https://i1.sndcdn.com/avatars-wpOz0Tqdl3eoO4WM-O3P1Qw-t240x240.jpg",
         song: {},
-        createdAt: new Date().toISOString()
-    })
+        createdAt: new Date().toISOString(),
+    });
 
-    return { id: newPlaylistRef.key, name, userId, thumbnail: newPlaylistRef.thumbnail }
-}
+    return { id: newPlaylistRef.key, name, userId, thumbnail: "https://i1.sndcdn.com/avatars-wpOz0Tqdl3eoO4WM-O3P1Qw-t240x240.jpg" };
+};
 
 const getPlaylist = async (userId) => {
-    const playlistsRef = db.ref("playlists");
-    const snapshot = await playlistsRef.orderByChild("userId").equalTo(userId).once("value");
-    return snapshot.val() ? Object.values(snapshot.val()) : [];
-}
 
-const getSongsFromPlaylist = async (playlistId) => {
-    const playlistRef = db.ref("playlists").child(playlistId).child("songs")
-    const snapshot = await playlistRef.once("value")
+    const playlistsRef = db.ref(`users/${userId}/playlists`);
+    const snapshot = await playlistsRef.once("value");
 
     if (!snapshot.exists()) {
-        throw new Error("Playlist not found")
+        return []; 
     }
-    return snapshot.val() ? Object.values(snapshot.val()) : [];
-}
+    const playlists = snapshot.val();
 
-const addSongToPlaylist = async (data) => {
-    const { playlistId, songId } = data
-    const songData = await ZingMp3.getInfoSong(songId)
-    console.log("Song Data:", songData)
-    console.log(songData.data.encodeId)
+    const result = Object.values(playlists);
 
-    const playlistsRef = db.ref("playlists").child(playlistId).child("songs")
-    const snapshot = await playlistsRef.child(songId).once("value")
+    return result;
+};
+
+
+const addSongToPlaylist = async ({ userId, playlistId, songId }) => {
+    if (!userId || !playlistId || !songId) {
+        throw new Error("Thiếu userId, playlistId hoặc songId");
+    }
+
+    const songRef = db.ref(`users/${userId}/playlists/${playlistId}/song/${songId}`);
+    
+    const snapshot = await songRef.once("value");
 
     if (snapshot.exists()) {
-        throw new Error("Song already exists in the playlist")
+        throw new Error("Bài hát đã tồn tại trong playlist");
     }
 
-    await playlistsRef.child(songId).set({ 
-        songId: songData.data.encodeId,
-        songName: songData.data.title,
-        artistsNames: songData.data.artistsNames,
-        thumbnail: songData.data.thumbnail
-    })
+    await songRef.set({
+        id: songId
+    });
 
-    const updatedPlaylistSnapshot = await db.ref("playlists").child(playlistId).once("value");
-    const updatedPlaylist = updatedPlaylistSnapshot.val();
-    const totalSongs = updatedPlaylist.song ? Object.keys(updatedPlaylist.song).length : 0;
-
-
-    return {
-        ...updatedPlaylist,
-        totalSongs
-    };
-}
+    return { playlistId, songId };
+};
 
 const removeSongFromPlaylist = async (data) => {
     const { playlistId, songId } = data;
