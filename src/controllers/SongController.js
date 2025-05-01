@@ -31,8 +31,10 @@ const addSongToFavorite = async (req, res) => {
 
   const getFavoritePlaylist = async (req, res) => {
     try {
+      console.log("------------getFavoritePlaylist--------------------\n")
       const { userId } = req.query;
       const result = await songService.getFavoritePlaylist(userId);
+      console.log(result)
       res.status(200).json(result);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -40,13 +42,12 @@ const addSongToFavorite = async (req, res) => {
   };
   
   const checkIsFavorite = async (req, res) => {
-    console.log("--------------------------------check favorite controller")
+    
     try {
       const { userId, songId } = req.query;
       if (!userId || !songId) {
         return res.status(400).json({ message: 'Thiếu userId hoặc songId' });
       }
-      console.log("---------------------------checking if userId and songId not null")
       const isFav = await songService.isFavorite({ userId, songId });
       res.status(200).json({ isFavorite: isFav });
     } catch (error) {

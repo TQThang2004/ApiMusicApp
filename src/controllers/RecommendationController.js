@@ -1,4 +1,5 @@
 const recommendationService = require('../services/recommendationService');
+const { getRecommendationsV2 } = require('../services/recommendationV2');
 
 const getRecommendations = async (req, res) => {
   try {
@@ -7,7 +8,7 @@ const getRecommendations = async (req, res) => {
       return res.status(400).json({ message: 'Thiếu userId' });
     }
 
-    const recommendedSongs = await recommendationService.getRecommendations(userId);
+    const recommendedSongs = await getRecommendationsV2(userId);
     console.log("Recommendation Song:", recommendedSongs);
     
     res.status(200).json({
