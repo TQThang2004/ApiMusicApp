@@ -3,8 +3,8 @@ const db = require("../config/db");
 
 
 
-const addSongToFavorite = async ({ userId, songId, name, thumbnailM ,genreIds}) => {
-  console.log("addSongToFavorite------------------", userId, songId, name, thumbnailM,genreIds);
+const addSongToFavorite = async ({ userId, songId, title, thumbnailM ,genreIds,artist}) => {
+  console.log("addSongToFavorite------------------", userId, songId, title, thumbnailM,genreIds,artist);
     if (!userId || !songId) throw new Error("Thiếu userId hoặc songId");
   
     const songRef = db.ref(`users/${userId}/favorite/song/${songId}`);
@@ -15,14 +15,14 @@ const addSongToFavorite = async ({ userId, songId, name, thumbnailM ,genreIds}) 
     }
   
     await songRef.set({
-      id: songId,
-      name,
+      encodeId: songId,
+      title:title,
       thumbnailM,
       genreIds,
-      Timestamp: Timestamp.now().toDate().toString(),
+      artist,
     });
   
-    return { id: songId, name, thumbnailM,genreIds };
+    return { id: songId, title, thumbnailM,genreIds };
   };
   
   const removeSongFromFavorite = async ({ userId, songId }) => {
@@ -69,8 +69,10 @@ const addSongToFavorite = async ({ userId, songId, name, thumbnailM ,genreIds}) 
     }
 };
 
-const addSongToHistory = async ({ userId, songId, name, thumbnailM }) => {
+const addSongToHistory = async ({ userId, songId, title, thumbnailM, genreIds,artist }) => {
   if (!userId || !songId) throw new Error("Thiếu userId hoặc songId");
+  console.log("Hello",artist)
+
 
   const historyRef = db.ref(`users/${userId}/history/${songId}`);
   const snapshot = await historyRef.once("value");
@@ -86,9 +88,11 @@ const addSongToHistory = async ({ userId, songId, name, thumbnailM }) => {
     // Nếu chưa có thì tạo mới
     await historyRef.set({
       encodeId: songId,
-      name,
+      title:title,
       thumbnailM,
       listenedAt,
+      genreIds,
+      artist,
     });
   }
 };

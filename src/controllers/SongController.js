@@ -5,10 +5,10 @@ const songService = require('../services/songService');
 const addSongToFavorite = async (req, res) => {
   console.log("1------------"); 
     try {
-      const { userId, songId, name, thumbnailM,genreIds } = req.body;
+      const { userId, songId, title, thumbnailM, genreIds,artist } = req.body;
       console.log("2--------------"); 
-      console.log(userId, songId, name, thumbnailM);
-      const result = await songService.addSongToFavorite({ userId, songId, name, thumbnailM ,genreIds});
+      console.log(userId, songId, title, thumbnailM, genreIds);
+      const result = await songService.addSongToFavorite({ userId, songId, title, thumbnailM ,genreIds,artist});
       res.status(200).json({
         message: '✅ Đã thêm vào danh sách yêu thích',
         song: result,
@@ -55,8 +55,8 @@ const addSongToFavorite = async (req, res) => {
   };
   const addSongToHistory = async (req, res) => {
     try {
-      const { userId, songId, name, thumbnailM } = req.body;
-      const result = await songService.addSongToHistory({ userId, songId, name, thumbnailM });
+      const { userId, songId, title, thumbnailM , genreIds, artist} = req.body;
+      const result = await songService.addSongToHistory({ userId, songId, title, thumbnailM,genreIds,artist });
       res.status(200).json({
         message: '✅ Đã thêm vào lịch sử người nghe',
         song: result,
