@@ -1,6 +1,6 @@
 const mainService = require('../services/mainService');
 
-const   createPlaylist = async (req, res) => {
+const createPlaylist = async (req, res) => {
     console.log(req.body)
     try {
         const result = await mainService.createPlaylist(req.body);
@@ -34,13 +34,12 @@ const getPlaylist = async (req, res) => {
     }
 }
 
-const getSongsFromPlaylist = async (req, res) => {
+const removePlaylist = async (req, res) => {
     try {
-        const { playlistId } = req.params;
-        const result = await mainService.getSongsFromPlaylist(playlistId);
+        const result = await mainService.removePlaylist(req.body);
         res.status(200).json({
-            message: "Lấy bài hát thành công",
-            songs: {
+            message: "Xoá playlist thành công",
+            data: {
                 result
             }
         });
@@ -50,10 +49,34 @@ const getSongsFromPlaylist = async (req, res) => {
     }
 }
 
+const getSongsFromPlaylist = async (req, res) => {
+    try {
+        const { userId, playlistId } = req.params;
+        
+        const songs = await mainService.getSongsFromPlaylist({ userId, playlistId });
+        
+        res.status(200).json({
+            success: true,
+            message: "Lấy danh sách bài hát thành công",
+            data: {
+                playlistId,
+                songs
+            }
+        });
+    } catch (error) {
+        console.log("Error in getSongsFromPlaylist:", error.message);
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 const addSongToPlaylist = async (req, res) => {
     try {
         const result = await mainService.addSongToPlaylist(req.body);
         res.status(200).json({
+            success: true,
             message: "Thêm bài hát vào playlist thành công",
             song: {
                 id: result.id,
@@ -71,6 +94,7 @@ const removeSongFromPlaylist = async (req, res) => {
     try {
         const result = await mainService.removeSongFromPlaylist(req.body);
         res.status(200).json({
+            success: true,
             message: "Xoá playlist thành công",
             data: {
                 result
@@ -87,5 +111,6 @@ module.exports = {
     addSongToPlaylist,
     getPlaylist,
     getSongsFromPlaylist,
-    removeSongFromPlaylist
+    removeSongFromPlaylist,
+    removePlaylist
 }
